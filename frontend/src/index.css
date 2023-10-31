@@ -2,8 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url('https://fonts.googleapis.com/css2?family=Asap:wght@300&family=Lato:wght@700&family=Montserrat:wght@300&display=swap');
+
 body {
   background-color: rgb(230, 230, 230);
+  font-family: 'Lato', Times, serif;
 }
 
 .loadingSpinnerContainer {

@@ -95,8 +95,8 @@ function Updategroup({ setUpdate, chat }) {
     dispatch(fetchUser({ search }));
   }, [dispatch, search]);
   return (
-    <div className="w-[100vw] h-[100vh] fixed top-0 left-0 flex justify-center items-center">
-      <div className="bg-gray-300 p-[20px] absolute w-[40%] h-[80%] flex flex-col gap-3  ">
+    <div className="w-full md:w-[100vw] h-[100vh] fixed top-0 left-0 flex justify-center items-center">
+      <div className="bg-gray-300 p-[20px] absolute md:w-[40%] h-[80%] flex flex-col gap-3  ">
         <div className="flex flex-col gap-4">
           <div className="flex justify-between">
             <h1 className="font-bold text-2xl">Update Group</h1>

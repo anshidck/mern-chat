@@ -1,12 +1,14 @@
-import { useState, useEffect } from "react";
 import { BiArrowBack, BiShowAlt } from "react-icons/bi";
 import { useSelector, useDispatch } from "react-redux";
 import ProfilView from "./ProfilView";
 import Updategroup from "./Updategroup";
 import { toast } from "react-toastify";
 import ScrollableFeed from "react-scrollable-feed";
+import { reset } from "../features/message/messageSlice";
 import { fetchMessages, createMessage } from "../features/message/messageSlice";
 import io from "socket.io-client";
+import Scroll from "./Scroll";
+import { useEffect, useState } from "react";
 const ENDPOINT = "http://localhost:5000";
 var socket, selectedChatCompare;
 
@@ -31,7 +33,7 @@ function Chatbox({ chat, setChat }) {
       dispatch(fetchMessages(chat._id));
       socket.emit("join chat", chat._id);
     } catch (error) {
-      toast.error('Error occurred')
+      toast.error("Error occurred");
     }
   };
 
@@ -42,10 +44,10 @@ function Chatbox({ chat, setChat }) {
         dispatch(
           createMessage({
             content: newMessage,
-            chatId: chat,
+            chatId: chat._id,
           })
         );
-        socket.emit("new message", messages);
+        socket.emit("new message",{ chat, sender: user, content: newMessage });
         setNewMessage("");
       } catch (error) {
         toast.error("Message not created");
@@ -57,23 +59,24 @@ function Chatbox({ chat, setChat }) {
     socket = io(ENDPOINT);
     socket.emit("setup", user);
     socket.on("connected", () => setSocketConnected(true));
-
-    // eslint-disable-next-line
-  }, []);
+  
+    return () => {
+      socket.disconnect();
+    };
+  }, []);  
 
   useEffect(() => {
     fetchUserMessage();
     selectedChatCompare = chat;
-    // eslint-disable-next-line
-  }, [chat]);
-
-
- 
+    return () => {
+      dispatch(reset());
+    };
+  }, [chat, dispatch]);
 
   return (
-    <div className=" bg-white h-screen w-full p-4 border-2 border-gray-600">
-      <div className="flex-col">
-        <div className="flex justify-between items-center">
+    <div className=" bg-white w-full h-[100vh] p-4 border-2 border-gray-600 overflow-hidden relative">
+      <div className="flex flex-col h-screen">
+        <div className="flex justify-between items-center ">
           <BiArrowBack
             className="md:hidden"
             size={25}
@@ -103,18 +106,18 @@ function Chatbox({ chat, setChat }) {
           </div>
         </div>
         <div className="border border-gray-300 mt-3"></div>
-        <div className="flex flex-col justify-center items-center">
+        <div className="flex flex-col items-center w-full h-[90vh]">
           {chat ? (
             <>
-              <div className="w-full h-[500px] md:h-[550px] flex flex-col justify-end gap-3">
-                <ScrollableFeed className="flex flex-col gap-2 p-2 w-full">
+              <div className="flex flex-col gap-1 overflow-hidden w-full h-[80vh]">
+                <ScrollableFeed className="flex flex-col gap-2 md:p-2 w-full">
                   {messages &&
                     messages.map((message, index) => (
                       <p
                         className={`${
                           message.sender._id === user._id
-                            ? "ml-auto text-white bg-green-900"
-                            : " text-white bg-black"
+                            ? "ml-auto text-white bg-green-900 min-w-[50px]"
+                            : " text-white bg-black min-w-[60px]"
                         }  p-2 rounded`}
                         style={{ width: `${message.content.length * 13}px` }}
                         key={index}
@@ -123,10 +126,13 @@ function Chatbox({ chat, setChat }) {
                       </p>
                     ))}
                 </ScrollableFeed>
-                <form className="w-full flex gap-1" onSubmit={sendMessage}>
+                <form
+                  className="w-full flex gap-1 absolute bottom-1 right-1 left-1"
+                  onSubmit={sendMessage}
+                >
                   <input
                     type="text"
-                    className="border-2 border-gray-500 rounded w-full py-2 px-2"
+                    className="border-2 border-gray-500 rounded w-[92%] py-2 px-2 "
                     onChange={typinghandler}
                     value={newMessage}
                   />
@@ -145,6 +151,7 @@ function Chatbox({ chat, setChat }) {
             </h1>
           )}
         </div>
+
         {open && <ProfilView chat={chat} setOpen={setOpen} />}
         {updateOpen && (
           <Updategroup

@@ -61,7 +61,7 @@ function Register() {
 
   return (
     <div>
-      <section className="bg-white w-[70%] h-[530px] mx-auto my-12 flex flex-col items-center p-6">
+      <section className="bg-white w-full md:w-[70%] h-full md:h-[530px] mx-auto md:my-12 flex flex-col items-center p-6">
         <h1 className="text-4xl sm:text-5xl font-bold py-3">Register Form</h1>
         <p className="font-semibold">Please create a Account</p>
         <form

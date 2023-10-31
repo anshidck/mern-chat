@@ -61,6 +61,7 @@ function Grouplist({ setOpen }) {
     try {
       dispatch(createGroup({ name: groupName,  users: JSON.stringify(selectedUsers.map((u) => u._id)) }));
       setSelectedUsers([])
+      setOpen(false)
     } catch (error) {
       toast.success('New Group chat created')
     }
